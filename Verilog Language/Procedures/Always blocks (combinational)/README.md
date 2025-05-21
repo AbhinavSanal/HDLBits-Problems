@@ -12,7 +12,7 @@ For example, the assign and combinational always block describe the same circuit
 `assign out1 = a & b | c ^ d;`
 `always @(*) out2 = a & b | c ^ d;`
 
-![img](https://hdlbits.01xz.net/wiki/File:Alwayscomb.png)
+![img](https://hdlbits.01xz.net/mw/images/2/2b/Alwayscomb.png?20161007195815)
 
 For combinational always blocks, always use a sensitivity list of (*). Explicitly listing out the signals is error-prone (if you miss one), and is ignored for hardware synthesis. If you explicitly specify the sensitivity list and miss a signal, the synthesized hardware will still behave as though (*) was specified, but the simulation will not and not match the hardware's behaviour. (In SystemVerilog, use always_comb.)
 
