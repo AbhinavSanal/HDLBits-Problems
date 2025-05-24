@@ -1,5 +1,3 @@
-// the code is not complete
-
 module top_module(
     input clk,
     input areset,    // Freshly brainwashed Lemmings walk left.
@@ -10,40 +8,36 @@ module top_module(
     output walk_left,
     output walk_right,
     output aaah,
-    output digging ); 
+    output digging );
     
-    parameter LEFT=0, RIGHT=1, FALL=2, DIG=3, SPLAT=4;
-    reg [2:0] prev_state, state, next_state;
-    reg [4:0] fall_count;
-    
-    always @(posedge clk or posedge areset) begin
-        if (areset) begin
-            state <= LEFT;
-            prev_state <= LEFT;
-        end else begin
-            // Store previous walking state before DIG or FALL
-            if(state == FALL & (next_state == FALL | next_state == SPLAT)) fall_count = fall_count + 1'd1;
- 	        else fall_count = 5'd0;
-            if ((state == LEFT | state == RIGHT) & dig)
-                prev_state <= state;
-            state <= next_state;
-        end
-    end
+    parameter LEFT=0, RIGHT=1, FALL_L=3, FALL_R=4, DIG_L=5, DIG_R=6, SPLAT=7;
+    reg [2:0] state, next_state;
+    reg [5:0] fall_count;
     
     always @(*) begin
         case(state)
-            LEFT: next_state = ground ? (dig ? DIG : (bump_left ? RIGHT : LEFT)) : FALL;
-            RIGHT: next_state = ground ? (dig ? DIG : (bump_right ? LEFT : RIGHT)) : FALL;
-            FALL: next_state = ground ? (fall_count < 5'd20 ? prev_state : SPLAT) : FALL;
-            DIG: next_state = ground ? DIG : FALL;
+            LEFT: next_state = ground ? (dig ? DIG_L : (bump_left ? RIGHT : LEFT)) : FALL_L;
+            RIGHT: next_state = ground ? (dig ? DIG_R : (bump_right ? LEFT : RIGHT)) : FALL_R;
+            FALL_L: next_state = ground ? (fall_count > 19 ? SPLAT : LEFT) : FALL_L;
+            FALL_R: next_state = ground ? (fall_count > 19 ? SPLAT : RIGHT) : FALL_R;
+            DIG_L: next_state = ground ? DIG_L : FALL_L; 
+            DIG_R: next_state = ground ? DIG_R : FALL_R;
             SPLAT: next_state = SPLAT;
         endcase
     end
-   
-    assign walk_left = (state == LEFT) ? 1'b1 : 1'b0;
-    assign walk_right = (state == RIGHT) ? 1'b1 : 1'b0;
-    assign aaah = ~walk_left & ~walk_right & ~digging;
-    assign digging = (state == DIG) ? 1'b1 : 1'b0;
+    
+    always @(posedge clk, posedge areset) begin
+        if(areset) state = LEFT;
+        else begin
+            if(state == FALL_L | state == FALL_R) fall_count = (fall_count < 20) ? (fall_count + 1) : 5'd20;
+            else fall_count = 5'd0;
+            state = next_state;
+        end
+    end
+    
+    assign walk_left = (state == LEFT);
+    assign walk_right = (state == RIGHT);
+    assign aaah = (state == FALL_L | state == FALL_R);
+    assign digging = (state == DIG_L | state == DIG_R);
 
 endmodule
-
