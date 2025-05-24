@@ -11,3 +11,5 @@ module top_module (
     endgenerate
 
 endmodule
+
+//if module dff is not availabe create a module named dff using dff.v in the samw folder.
