@@ -7,7 +7,6 @@ module top_module(
     parameter S0=0, S1=1, S2=2, S3=3;
     reg [1:0] state, next_state;
     
-    // State transition logic (combinational)
     always @(*) begin
         case (state)
             S0: next_state <= in[3] ? S1 : S0;
@@ -17,15 +16,11 @@ module top_module(
         endcase
     end
     
- 
-
-    // State flip-flops (sequential
     always @(posedge clk) begin
-        if (reset) state = S0;
-        else state = next_state;
+        if (reset) state <= S0;
+        else state <= next_state;
     end  
  
-    // Output logic
     assign done = (state == S3) ? 1'd1 : 1'd0;
 
 endmodule
