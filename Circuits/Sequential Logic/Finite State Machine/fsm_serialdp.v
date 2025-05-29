@@ -38,18 +38,16 @@ module top_module(
         if (reset) state <= IDLE;
         else state <= next_state;
         
-        if (clk) begin
-            case(next_state)
-                B0: out_byte[0] <= in;
-                B1: out_byte[1] <= in;
-                B2: out_byte[2] <= in;
-                B3: out_byte[3] <= in;
-                B4: out_byte[4] <= in;
-                B5: out_byte[5] <= in;
-                B6: out_byte[6] <= in;
-                B7: out_byte[7] <= in;
-            endcase
-        end
+        case(next_state)
+            B0: out_byte[0] <= in;
+            B1: out_byte[1] <= in;
+            B2: out_byte[2] <= in;
+            B3: out_byte[3] <= in;
+            B4: out_byte[4] <= in;
+            B5: out_byte[5] <= in;
+            B6: out_byte[6] <= in;
+            B7: out_byte[7] <= in;
+        endcase
     end
                 
     assign done = (state == STOP_D);
